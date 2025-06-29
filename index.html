@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏠 Home Layout Creator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            letter-spacing: -2px;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            font-weight: 500;
+        }
+
+        .main-content {
+            display: flex;
+            gap: 20px;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+            min-height: 800px;
+        }
+
+        .sidebar {
+            width: 300px;
+            background: #f8fafc;
+            padding: 25px;
+            border-right: 1px solid #e2e8f0;
+        }
+
+        .tool-section {
+            margin-bottom: 30px;
+        }
+
+        .tool-section h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #374151;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tool-btn {
+            width: 100%;
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            border: 2px solid transparent;
+            border-radius: 12px;
+            background: white;
+            color: #374151;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .tool-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+        }
+
+        .tool-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .room-icon {
+            font-size: 1.3rem;
+            width: 24px;
+            text-align: center;
+        }
+
+        .canvas-container {
+            flex: 1;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .canvas-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px 20px;
+            background: #f1f5f9;
+            border-radius: 12px;
+        }
+
+        .canvas-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .control-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            background: white;
+            color: #374151;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .control-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .control-btn.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .canvas-wrapper {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 20px;
+            position: relative;
+        }
+
+        #canvas {
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            background: white;
+            cursor: crosshair;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+
+        .properties-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 15px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+            border: 2px solid #e2e8f0;
+        }
+
+        .property-group {
+            margin-bottom: 15px;
+        }
+
+        .property-label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 6px;
+        }
+
+        .property-input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+        .property-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .dimensions-display {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .dimension-box {
+            background: #f1f5f9;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .dimension-value {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .dimension-label {
+            font-size: 0.8rem;
+            color: #64748b;
+            margin-top: 2px;
+        }
+
+        .delete-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .delete-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(239, 68, 68, 0.3);
+        }
+
+        .download-section {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 15px;
+        }
+
+        .download-section h3 {
+            color: white;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .download-btn {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-bottom: 8px;
+        }
+
+        .download-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-1px);
+        }
+
+        .custom-room-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            width: 400px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #374151;
+        }
+
+        .emoji-picker {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 8px;
+            margin-bottom: 20px;
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 10px;
+            background: #f8fafc;
+            border-radius: 8px;
+        }
+
+        .emoji-btn {
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: white;
+            border-radius: 6px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .emoji-btn:hover {
+            transform: scale(1.1);
+            background: #667eea;
+        }
+
+        .emoji-btn.selected {
+            background: #667eea;
+            transform: scale(1.1);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .modal-btn.primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .modal-btn.secondary {
+            background: #e2e8f0;
+            color: #374151;
+        }
+
+        .stats {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .stat-item {
+            background: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .stat-value {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+
+        .instructions {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        @media (max-width: 1024px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+            }
+            
+            .header h1 {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏠 Home Layout Creator</h1>
+            <p>Design your dream home with precision and style</p>
+        </div>
+
+        <div class="main-content">
+            <div class="sidebar">
+                <div class="instructions">
+                    💡 <strong>Pro Tips:</strong><br>
+                    • Click tools to place rooms<br>
+                    • Drag to move & resize<br>
+                    • Use precise measurements<br>
+                    • Download your masterpiece!
+                </div>
+
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="room-count">0</div>
+                        <div class="stat-label">Rooms</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="total-area">0</div>
+                        <div class="stat-label">Sq Ft</div>
+                    </div>
+                </div>
+
+                <div class="tool-section">
+                    <h3>🛠️ Tools</h3>
+                    <button class="tool-btn active" data-tool="select">
+                        <span class="room-icon">👆</span>
+                        Select & Move
+                    </button>
+                </div>
+
+                <div class="tool-section">
+                    <h3>🏠 Room Types</h3>
+                    <button class="tool-btn" data-tool="living">
+                        <span class="room-icon">🛋️</span>
+                        Living Room
+                    </button>
+                    <button class="tool-btn" data-tool="bedroom">
+                        <span class="room-icon">🛏️</span>
+                        Bedroom
+                    </button>
+                    <button class="tool-btn" data-tool="kitchen">
+                        <span class="room-icon">🍳</span>
+                        Kitchen
+                    </button>
+                    <button class="tool-btn" data-tool="bathroom">
+                        <span class="room-icon">🚿</span>
+                        Bathroom
+                    </button>
+                    <button class="tool-btn" data-tool="office">
+                        <span class="room-icon">💻</span>
+                        Office
+                    </button>
+                    <button class="tool-btn" data-tool="dining">
+                        <span class="room-icon">🍽️</span>
+                        Dining Room
+                    </button>
+                    <button class="tool-btn" data-tool="custom" id="custom-room-btn">
+                        <span class="room-icon">✨</span>
+                        Custom Room
+                    </button>
+                </div>
+
+                <div class="download-section">
+                    <h3>📥 Export Your Design</h3>
+                    <button class="download-btn" id="download-image">📸 Download as Image</button>
+                    <button class="download-btn" id="download-json">💾 Save Floor Plan</button>
+                    <button class="download-btn" id="load-json">📂 Load Floor Plan</button>
+                    <input type="file" id="file-input" accept=".json" style="display: none;">
+                </div>
+
+                <div id="properties-panel" class="properties-panel" style="display: none;">
+                    <h3>⚙️ Room Properties</h3>
+                    <div class="property-group">
+                        <label class="property-label">Room Name</label>
+                        <input type="text" class="property-input" id="room-name">
+                    </div>
+                    <div class="property-group">
+                        <label class="property-label">Room Type</label>
+                        <select class="property-input" id="room-type">
+                            <option value="living">🛋️ Living Room</option>
+                            <option value="bedroom">🛏️ Bedroom</option>
+                            <option value="kitchen">🍳 Kitchen</option>
+                            <option value="bathroom">🚿 Bathroom</option>
+                            <option value="office">💻 Office</option>
+                            <option value="dining">🍽️ Dining Room</option>
+                        </select>
+                    </div>
+                    <div class="property-group">
+                        <label class="property-label">Dimensions</label>
+                        <div class="dimensions-display">
+                            <div class="dimension-box">
+                                <div class="dimension-value" id="room-width">0</div>
+                                <div class="dimension-label">Width (ft)</div>
+                            </div>
+                            <div class="dimension-box">
+                                <div class="dimension-value" id="room-height">0</div>
+                                <div class="dimension-label">Height (ft)</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="property-group">
+                        <div class="dimension-box">
+                            <div class="dimension-value" id="room-area">0</div>
+                            <div class="dimension-label">Area (sq ft)</div>
+                        </div>
+                    </div>
+                    <button class="delete-btn" id="delete-room">🗑️ Delete Room</button>
+                </div>
+            </div>
+
+            <div class="canvas-container">
+                <div class="canvas-header">
+                    <div>
+                        <h3>🎨 Design Canvas</h3>
+                        <div style="font-size: 0.9rem; color: #64748b; margin-top: 4px;">
+                            Drag to move • Resize with corners • Precise grid snapping
+                        </div>
+                    </div>
+                    <div class="canvas-controls">
+                        <button class="control-btn active" id="grid-toggle">Grid</button>
+                        <button class="control-btn" id="clear-all">Clear All</button>
+                    </div>
+                </div>
+
+                <div class="canvas-wrapper">
+                    <canvas id="canvas" width="900" height="600"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Room Modal -->
+    <div class="custom-room-modal" id="custom-room-modal">
+        <div class="modal-content">
+            <div class="modal-header">✨ Create Custom Room</div>
+            
+            <div class="property-group">
+                <label class="property-label">Room Name</label>
+                <input type="text" class="property-input" id="custom-room-name" placeholder="Enter room name...">
+            </div>
+            
+            <div class="property-group">
+                <label class="property-label">Choose Icon</label>
+                <div class="emoji-picker" id="emoji-picker">
+                    <!-- Emojis will be populated by JavaScript -->
+                </div>
+            </div>
+            
+            <div class="modal-actions">
+                <button class="modal-btn secondary" id="cancel-custom">Cancel</button>
+                <button class="modal-btn primary" id="create-custom">Create Room</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Application State
+        let rooms = [];
+        let selectedTool = 'select';
+        let selectedRoom = null;
+        let isDragging = false;
+        let isResizing = false;
+        let dragStart = { x: 0, y: 0 };
+        let dragOffset = { x: 0, y: 0 };
+        let showGrid = true;
+        let customRooms = [];
+        let resizeHandle = null;
+
+        // Constants
+        const GRID_SIZE = 15; // Smaller grid for more precision
+        const CANVAS_WIDTH = 900;
+        const CANVAS_HEIGHT = 600;
+        const MIN_ROOM_SIZE = 45; // 3 feet minimum
+        const PIXELS_PER_FOOT = 15; // 15 pixels = 1 foot for precise measurements
+
+        // Room Types
+        const ROOM_TYPES = {
+            living: { name: 'Living Room', color: '#3B82F6', icon: '🛋️' },
+            bedroom: { name: 'Bedroom', color: '#8B5CF6', icon: '🛏️' },
+            kitchen: { name: 'Kitchen', color: '#EF4444', icon: '🍳' },
+            bathroom: { name: 'Bathroom', color: '#06B6D4', icon: '🚿' },
+            office: { name: 'Office', color: '#F59E0B', icon: '💻' },
+            dining: { name: 'Dining Room', color: '#10B981', icon: '🍽️' }
+        };
+
+        // Available emojis for custom rooms
+        const ROOM_EMOJIS = [
+            '🏠', '🏡', '🏢', '🏣', '🏤', '🏥', '🏦', '🏧',
+            '🏨', '🏩', '🏪', '🏫', '🏬', '🏭', '🏮', '🏯',
+            '🛋️', '🛏️', '🚿', '🚽', '🍳', '🍽️', '💻', '📺',
+            '🎮', '🎨', '🎭', '🎪', '🎯', '🎲', '🃏', '🎰',
+            '📚', '📖', '📝', '📊', '📈', '📉', '📋', '📌',
+            '🔧', '🔨', '🔩', '⚙️', '⚡', '🔥', '💡', '🕯️',
+            '🌱', '🌿', '🌺', '🌻', '🌷', '🌹', '🌸', '🌼'
+        ];
+
+        // Canvas and context
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        // Utility Functions
+        function snapToGrid(value) {
+            return Math.round(value / GRID_SIZE) * GRID_SIZE;
+        }
+
+        function pixelsToFeet(pixels) {
+            return Math.round((pixels / PIXELS_PER_FOOT) * 10) / 10; // Round to 1 decimal
+        }
+
+        function feetToPixels(feet) {
+            return feet * PIXELS_PER_FOOT;
+        }
+
+        function generateId() {
+            return 'room_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        }
+
+        // Drawing Functions
+        function drawGrid() {
+            if (!showGrid) return;
+            
+            ctx.strokeStyle = '#E5E7EB';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([]);
+            
+            for (let x = 0; x <= CANVAS_WIDTH; x += GRID_SIZE) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, CANVAS_HEIGHT);
+                ctx.stroke();
+            }
+            
+            for (let y = 0; y <= CANVAS_HEIGHT; y += GRID_SIZE) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(CANVAS_WIDTH, y);
+                ctx.stroke();
+            }
+        }
+
+        function drawRooms() {
+            rooms.forEach(room => {
+                const roomType = ROOM_TYPES[room.type] || { 
+                    name: room.customName || 'Custom Room', 
+                    color: '#6B7280', 
+                    icon: room.customIcon || '📦' 
+                };
+                
+                // Room background with gradient
+                const gradient = ctx.createLinearGradient(room.x, room.y, room.x + room.width, room.y + room.height);
+                gradient.addColorStop(0, roomType.color + '15');
+                gradient.addColorStop(1, roomType.color + '25');
+                ctx.fillStyle = gradient;
+                ctx.fillRect(room.x, room.y, room.width, room.height);
+                
+                // Room border
+                ctx.strokeStyle = room.id === selectedRoom?.id ? '#DC2626' : roomType.color;
+                ctx.lineWidth = room.id === selectedRoom?.id ? 3 : 2;
+                ctx.setLineDash([]);
+                ctx.strokeRect(room.x, room.y, room.width, room.height);
+                
+                // Room label
+                ctx.fillStyle = '#1F2937';
+                ctx.font = 'bold 14px system-ui';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                
+                const icon = roomType.icon;
+                const name = room.name;
+                
+                ctx.fillText(
+                    `${icon} ${name}`,
+                    room.x + room.width / 2,
+                    room.y + room.height / 2 - 8
+                );
+                
+                // Room dimensions
+                ctx.font = '12px system-ui';
+                ctx.fillStyle = '#6B7280';
+                const widthFt = pixelsToFeet(room.width);
+                const heightFt = pixelsToFeet(room.height);
+                const area = Math.round(widthFt * heightFt * 10) / 10;
+                
+                ctx.fillText(
+                    `${widthFt}' × ${heightFt}' (${area} sq ft)`,
+                    room.x + room.width / 2,
+                    room.y + room.height / 2 + 12
+                );
+                
+                // Resize handles for selected room
+                if (room.id === selectedRoom?.id) {
+                    drawResizeHandles(room);
+                }
+            });
+        }
+
+        function drawResizeHandles(room) {
+            ctx.fillStyle = '#DC2626';
+            ctx.strokeStyle = '#FFFFFF';
+            ctx.lineWidth = 2;
+            const handleSize = 8;
+            
+            const handles = [
+                { x: room.x - handleSize/2, y: room.y - handleSize/2, type: 'nw' },
+                { x: room.x + room.width/2 - handleSize/2, y: room.y - handleSize/2, type: 'n' },
+                { x: room.x + room.width - handleSize/2, y: room.y - handleSize/2, type: 'ne' },
+                { x: room.x + room.width - handleSize/2, y: room.y + room.height/2 - handleSize/2, type: 'e' },
+                { x: room.x + room.width - handleSize/2, y: room.y + room.height - handleSize/2, type: 'se' },
+                { x: room.x + room.width/2 - handleSize/2, y: room.y + room.height - handleSize/2, type: 's' },
+                { x: room.x - handleSize/2, y: room.y + room.height - handleSize/2, type: 'sw' },
+                { x: room.x - handleSize/2, y: room.y + room.height/2 - handleSize/2, type: 'w' }
+            ];
+            
+            handles.forEach(handle => {
+                ctx.fillRect(handle.x, handle.y, handleSize, handleSize);
+                ctx.strokeRect(handle.x, handle.y, handleSize, handleSize);
+            });
+        }
+
+        function redrawCanvas() {
+            ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+            drawGrid();
+            drawRooms();
+        }
+
+        // Mouse interaction functions
+        function getMousePos(e) {
+            const rect = canvas.getBoundingClientRect();
+            return {
+                x: e.clientX - rect.left,
+                y: e.clientY - rect.top
+            };
+        }
+
+        function isPointInRoom(x, y, room) {
+            return x >= room.x && x <= room.x + room.width &&
+                   y >= room.y && y <= room.y + room.height;
+        }
+
+        function getResizeHandle(x, y, room) {
+            const handleSize = 8;
+            const handles = [
+                { x: room.x - handleSize/2, y: room.y - handleSize/2, cursor: 'nw-resize', type: 'nw' },
+                { x: room.x + room.width/2 - handleSize/2, y: room.y - handleSize/2, cursor: 'n-resize', type: 'n' },
+                { x: room.x + room.width - handleSize/2, y: room.y - handleSize/2, cursor: 'ne-resize', type: 'ne' },
+                { x: room.x + room.width - handleSize/2, y: room.y + room.height/2 - handleSize/2, cursor: 'e-resize', type: 'e' },
+                { x: room.x + room.width - handleSize/2, y: room.y + room.height - handleSize/2, cursor: 'se-resize', type: 'se' },
+                { x: room.x + room.width/2 - handleSize/2, y: room.y + room.height - handleSize/2, cursor: 's-resize', type: 's' },
+                { x: room.x - handleSize/2, y: room.y + room.height - handleSize/2, cursor: 'sw-resize', type: 'sw' },
+                { x: room.x - handleSize/2, y: room.y + room.height/2 - handleSize/2, cursor: 'w-resize', type: 'w' }
+            ];
+            
+            for (let handle of handles) {
+                if (x >= handle.x && x <= handle.x + handleSize &&
+                    y >= handle.y && y <= handle.y + handleSize) {
+                    return handle;
+                }
+            }
+            return null;
+        }
+
+        // Event Handlers
+        function handleMouseDown(e) {
+            const pos = getMousePos(e);
+            
+            if (selectedTool !== 'select' && selectedTool !== 'custom') {
+                // Add new room
+                const roomType = ROOM_TYPES[selectedTool];
+                const newRoom = {
+                    id: generateId(),
+                    name: `${roomType.name} ${rooms.filter(r => r.type === selectedTool).length + 1}`,
+                    type: selectedTool,
+                    x: snapToGrid(Math.max(0, Math.min(pos.x - 60, CANVAS_WIDTH - 120))),
+                    y: snapToGrid(Math.max(0, Math.min(pos.y - 40, CANVAS_HEIGHT - 80))),
+                    width: 120,
+                    height: 80
+                };
+                
+                rooms.push(newRoom);
+                selectedRoom = newRoom;
+                selectedTool = 'select';
+                updateToolButtons();
+                updatePropertiesPanel();
+                updateStats();
+                redrawCanvas();
+                return;
+            }
+            
+            // Find clicked room
+            const clickedRoom = rooms.find(room => isPointInRoom(pos.x, pos.y, room));
+            
+            if (clickedRoom && selectedTool === 'select') {
+                selectedRoom = clickedRoom;
+                
+                // Check for resize handle
+                const handle = getResizeHandle(pos.x, pos.y, clickedRoom);
+                if (handle) {
+                    isResizing = true;
+                    resizeHandle = handle.type;
+                    dragStart = { x: pos.x, y: pos.y };
+                } else {
+                    isDragging = true;
+                    dragOffset = { 
+                        x: pos.x - clickedRoom.x, 
+                        y: pos.y - clickedRoom.y 
+                    };
+                }
+                
+                updatePropertiesPanel();
+            } else {
+                selectedRoom = null;
+                updatePropertiesPanel();
+            }
+            
+            redrawCanvas();
+        }
+
+        function handleMouseMove(e) {
+            const pos = getMousePos(e);
+            
+            if (isDragging && selectedRoom) {
+                // Move room with precision
+                const newX = snapToGrid(Math.max(0, Math.min(pos.x - dragOffset.x, CANVAS_WIDTH - selectedRoom.width)));
+                const newY = snapToGrid(Math.max(0, Math.min(pos.y - dragOffset.y, CANVAS_HEIGHT - selectedRoom.height)));
+                
+                selectedRoom.x = newX;
+                selectedRoom.y = newY;
+                
+                updatePropertiesPanel();
+                redrawCanvas();
+            } else if (isResizing && selectedRoom) {
+                // Resize room with precision
+                const deltaX = pos.x - dragStart.x;
+                const deltaY = pos.y - dragStart.y;
+                
+                const originalRoom = { ...selectedRoom };
+                
+                switch(resizeHandle) {
+                    case 'nw':
+                        selectedRoom.width = Math.max(MIN_ROOM_SIZE, snapToGrid(originalRoom.width - deltaX));
+                        selectedRoom.height = Math.max(MIN_ROOM_SIZE, snapToGrid(originalRoom.height - deltaY));
+                        selectedRoom.x = originalRoom.x + originalRoom.width - selectedRoom.width;
+                        selectedRoom.y = originalRoom.y + originalRoom.height - selectedRoom.height;
+                        break;
+                    case 'n':
+                        selectedRoom.height = Math.max(MIN_ROOM_SIZE, snapToGrid(originalRoom.height - deltaY));
+                        selectedRoom.y = originalRoom.y + originalRoom.height - selectedRoom.height;
+                        break;
+                    case 'ne':
+                        selectedRoom.width = Math.max(MIN_ROOM_SIZE, snapToGrid(originalRoom.width + deltaX));
+                        selectedRoom.height = Math.max(MIN_ROOM_SIZE, snapToGrid(originalRoom.height - deltaY));
+                        selectedRoom.y = originalRoom.y + originalRoom.height - selectedRoom.height;
+                        break;
+                    case 'e':
+                        selectedRoom.width = Math.max(MIN_ROOM_SIZE, snapToGrid(originalRoom.width + deltaX));
+                        break;
+                    case 'se':
+                        selectedRoom.width = Math.max(MIN_ROOM_SIZE, snapToGrid(originalRoom.width + deltaX));
+                        selectedRoom.height = Math.max(MIN_ROOM_SIZE, snapToGrid(originalRoom.height + deltaY));
+                        break;
+                    case 's':
+                        selectedRoom.height = Math.max(MIN_ROOM_SIZE, snapToGrid(originalRoom.height + deltaY));
+                        break;
+                    case 'sw':
+                        selectedRoom.width = Math.max(MIN_ROOM_SIZE, snapToGrid(originalRoom.width - deltaX));
+                        selectedRoom.height = Math.max(MIN_ROOM_SIZE, snapToGrid(originalRoom.height + deltaY));
+                        selectedRoom.x = originalRoom.x + originalRoom.width - selectedRoom.width;
+                        break;
+                    case 'w':
+                        selectedRoom.width = Math.max(MIN_ROOM_SIZE, snapToGrid(originalRoom.width - deltaX));
+                        selectedRoom.x = originalRoom.x + originalRoom.width - selectedRoom.width;
+                        break;
+                }
+                
+                // Boundary checks
+                if (selectedRoom.x < 0) {
+                    selectedRoom.width += selectedRoom.x;
+                    selectedRoom.x = 0;
+                }
+                if (selectedRoom.y < 0) {
+                    selectedRoom.height += selectedRoom.y;
+                    selectedRoom.y = 0;
+                }
+                if (selectedRoom.x + selectedRoom.width > CANVAS_WIDTH) {
+                    selectedRoom.width = CANVAS_WIDTH - selectedRoom.x;
+                }
+                if (selectedRoom.y + selectedRoom.height > CANVAS_HEIGHT) {
+                    selectedRoom.height = CANVAS_HEIGHT - selectedRoom.y;
+                }
+                
+                updatePropertiesPanel();
+                redrawCanvas();
+            } else {
+                // Update cursor
+                let cursor = 'default';
+                
+                if (selectedTool !== 'select') {
+                    cursor = 'crosshair';
+                } else {
+                    const hoveredRoom = rooms.find(room => isPointInRoom(pos.x, pos.y, room));
+                    if (hoveredRoom) {
+                        if (hoveredRoom.id === selectedRoom?.id) {
+                            const handle = getResizeHandle(pos.x, pos.y, hoveredRoom);
+                            cursor = handle ? handle.cursor : 'move';
+                        } else {
+                            cursor = 'pointer';
+                        }
+                    }
+                }
+                
+                canvas.style.cursor = cursor;
+            }
+        }
+
+        function handleMouseUp() {
+            isDragging = false;
+            isResizing = false;
+            resizeHandle = null;
+            dragStart = { x: 0, y: 0 };
+            dragOffset = { x: 0, y: 0 };
+        }
+
+        // UI Update Functions
+        function updateToolButtons() {
+            document.querySelectorAll('.tool-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.tool === selectedTool);
+            });
+        }
+
+        function updatePropertiesPanel() {
+            const panel = document.getElementById('properties-panel');
+            
+            if (selectedRoom) {
+                panel.style.display = 'block';
+                
+                document.getElementById('room-name').value = selectedRoom.name;
+                document.getElementById('room-type').value = selectedRoom.type;
+                document.getElementById('room-width').textContent = pixelsToFeet(selectedRoom.width);
+                document.getElementById('room-height').textContent = pixelsToFeet(selectedRoom.height);
+                
+                const area = Math.round(pixelsToFeet(selectedRoom.width) * pixelsToFeet(selectedRoom.height) * 10) / 10;
+                document.getElementById('room-area').textContent = area;
+            } else {
+                panel.style.display = 'none';
+            }
+        }
+
+        function updateStats() {
+            document.getElementById('room-count').textContent = rooms.length;
+            
+            const totalArea = rooms.reduce((sum, room) => {
+                return sum + (pixelsToFeet(room.width) * pixelsToFeet(room.height));
+            }, 0);
+            
+            document.getElementById('total-area').textContent = Math.round(totalArea);
+        }
+
+        // Custom Room Modal Functions
+        function showCustomRoomModal() {
+            const modal = document.getElementById('custom-room-modal');
+            const emojiPicker = document.getElementById('emoji-picker');
+            
+            // Clear previous content
+            emojiPicker.innerHTML = '';
+            
+            // Populate emoji picker
+            ROOM_EMOJIS.forEach(emoji => {
+                const btn = document.createElement('button');
+                btn.className = 'emoji-btn';
+                btn.textContent = emoji;
+                btn.onclick = () => {
+                    document.querySelectorAll('.emoji-btn').forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+                };
+                emojiPicker.appendChild(btn);
+            });
+            
+            // Select first emoji by default
+            emojiPicker.firstChild?.classList.add('selected');
+            
+            modal.style.display = 'flex';
+        }
+
+        function hideCustomRoomModal() {
+            document.getElementById('custom-room-modal').style.display = 'none';
+            document.getElementById('custom-room-name').value = '';
+        }
+
+        function createCustomRoom() {
+            const name = document.getElementById('custom-room-name').value.trim();
+            const selectedEmoji = document.querySelector('.emoji-btn.selected')?.textContent;
+            
+            if (!name || !selectedEmoji) {
+                alert('Please enter a room name and select an icon!');
+                return;
+            }
+            
+            // Create custom room type
+            const customId = `custom_${Date.now()}`;
+            ROOM_TYPES[customId] = {
+                name: name,
+                color: '#6B7280',
+                icon: selectedEmoji
+            };
+            
+            selectedTool = customId;
+            hideCustomRoomModal();
+            updateToolButtons();
+        }
+
+        // Download Functions
+        function downloadAsImage() {
+            // Create a temporary canvas with white background
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = CANVAS_WIDTH;
+            tempCanvas.height = CANVAS_HEIGHT;
+            const tempCtx = tempCanvas.getContext('2d');
+            
+            // Fill with white background
+            tempCtx.fillStyle = 'white';
+            tempCtx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+            
+            // Copy current canvas content
+            tempCtx.drawImage(canvas, 0, 0);
+            
+            // Create download link
+            const link = document.createElement('a');
+            link.download = `floor-plan-${new Date().toISOString().split('T')[0]}.png`;
+            link.href = tempCanvas.toDataURL();
+            link.click();
+        }
+
+        function downloadAsJSON() {
+            const floorPlan = {
+                rooms: rooms,
+                customRooms: Object.keys(ROOM_TYPES).filter(key => key.startsWith('custom_')).map(key => ({
+                    id: key,
+                    ...ROOM_TYPES[key]
+                })),
+                created: new Date().toISOString(),
+                version: '1.0'
+            };
+            
+            const dataStr = JSON.stringify(floorPlan, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const link = document.createElement('a');
+            link.download = `floor-plan-${new Date().toISOString().split('T')[0]}.json`;
+            link.href = dataUri;
+            link.click();
+        }
+
+        function loadFromJSON() {
+            document.getElementById('file-input').click();
+        }
+
+        function handleFileLoad(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const floorPlan = JSON.parse(e.target.result);
+                    
+                    // Load rooms
+                    rooms = floorPlan.rooms || [];
+                    
+                    // Load custom room types
+                    if (floorPlan.customRooms) {
+                        floorPlan.customRooms.forEach(customRoom => {
+                            ROOM_TYPES[customRoom.id] = {
+                                name: customRoom.name,
+                                color: customRoom.color,
+                                icon: customRoom.icon
+                            };
+                        });
+                    }
+                    
+                    selectedRoom = null;
+                    updatePropertiesPanel();
+                    updateStats();
+                    redrawCanvas();
+                    
+                    alert('Floor plan loaded successfully!');
+                } catch (error) {
+                    alert('Error loading floor plan: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // Event Listeners
+        canvas.addEventListener('mousedown', handleMouseDown);
+        canvas.addEventListener('mousemove', handleMouseMove);
+        canvas.addEventListener('mouseup', handleMouseUp);
+
+        // Tool button listeners
+        document.querySelectorAll('.tool-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (btn.dataset.tool === 'custom') {
+                    showCustomRoomModal();
+                } else {
+                    selectedTool = btn.dataset.tool;
+                    updateToolButtons();
+                }
+            });
+        });
+
+        // Control button listeners
+        document.getElementById('grid-toggle').addEventListener('click', () => {
+            showGrid = !showGrid;
+            document.getElementById('grid-toggle').classList.toggle('active', showGrid);
+            redrawCanvas();
+        });
+
+        document.getElementById('clear-all').addEventListener('click', () => {
+            if (confirm('Are you sure you want to clear all rooms?')) {
+                rooms = [];
+                selectedRoom = null;
+                updatePropertiesPanel();
+                updateStats();
+                redrawCanvas();
+            }
+        });
+
+        // Properties panel listeners
+        document.getElementById('room-name').addEventListener('input', (e) => {
+            if (selectedRoom) {
+                selectedRoom.name = e.target.value;
+                redrawCanvas();
+            }
+        });
+
+        document.getElementById('room-type').addEventListener('change', (e) => {
+            if (selectedRoom) {
+                selectedRoom.type = e.target.value;
+                updatePropertiesPanel();
+                redrawCanvas();
+            }
+        });
+
+        document.getElementById('delete-room').addEventListener('click', () => {
+            if (selectedRoom) {
+                rooms = rooms.filter(room => room.id !== selectedRoom.id);
+                selectedRoom = null;
+                updatePropertiesPanel();
+                updateStats();
+                redrawCanvas();
+            }
+        });
+
+        // Download listeners
+        document.getElementById('download-image').addEventListener('click', downloadAsImage);
+        document.getElementById('download-json').addEventListener('click', downloadAsJSON);
+        document.getElementById('load-json').addEventListener('click', loadFromJSON);
+        document.getElementById('file-input').addEventListener('change', handleFileLoad);
+
+        // Custom room modal listeners
+        document.getElementById('custom-room-btn').addEventListener('click', showCustomRoomModal);
+        document.getElementById('cancel-custom').addEventListener('click', hideCustomRoomModal);
+        document.getElementById('create-custom').addEventListener('click', createCustomRoom);
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Delete' || e.key === 'Backspace') {
+                if (selectedRoom && document.activeElement.tagName !== 'INPUT') {
+                    rooms = rooms.filter(room => room.id !== selectedRoom.id);
+                    selectedRoom = null;
+                    updatePropertiesPanel();
+                    updateStats();
+                    redrawCanvas();
+                }
+            } else if (e.key === 'Escape') {
+                selectedRoom = null;
+                selectedTool = 'select';
+                updateToolButtons();
+                updatePropertiesPanel();
+                redrawCanvas();
+            }
+        });
+
+        // Prevent context menu on canvas
+        canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+
+        // Initialize
+        updateStats();
+        redrawCanvas();
+    </script>
+</body>
+</html>
